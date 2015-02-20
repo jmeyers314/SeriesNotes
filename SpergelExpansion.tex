@@ -29,16 +29,16 @@ Instead of fitting for $r_0$, Spergel suggests fitting for
 \begin{equation}
   \Delta = 1 - \left(\frac{r_0}{r_1}\right)^2,
 \end{equation}
-where $r_1$ is the size of the nearest precomputed profile.
+where $r_1$ is the size of the nearest precomputed profile.  Here it's convenient to take $k \gamma r_1 \rightarrow k$ since the former always occur together.
 Expand:
 \begin{equation}
   \begin{split}
-    \Sigma(\vec{k}) & = \frac{L}{\{1+k^2\gamma^2r_1^2(1-\Delta)[1-\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}} \\
-    & = \frac{L}{\{1+k^2\gamma^2r_1^2 - k^2\gamma^2r_1^2[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}} \\
-    & = \frac{L (1+k^2\gamma^2r_1^2)^{-1-\nu}}{\{1 - \frac{k^2\gamma^2r_1^2}{1+k^2\gamma^2r_1^2}\left[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))\right]\}^{1+\nu}} \\
-    & = \frac{L}{(1+k^2\gamma^2r_1^2)^{1+\nu}}\sum_{j=0}^{\infty}\binom{\nu+j}{j}\left(\frac{k^2\gamma^2r_1^2}{1+k^2\gamma^2r_1^2}\right)^{j}[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))]^j \\
-    & = \sum_{j=0}^{\infty}\frac{L(k\gamma r_1)^{2j}}{(1+k^2\gamma^2r_1^2)^{1+\nu+j}}\binom{\nu+j}{j}[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))]^j \\
-    & = \sum_{j=0}^{\infty}\sum_{m=0}^{j}\frac{L(k\gamma r_1)^{2j}}{(1+k^2\gamma^2r_1^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\Delta^{j-m}(1-\Delta)^m\epsilon^m\cos^m(2(\phi-\phi_0))
+    \Sigma(\vec{k}) & = \frac{L}{\{1+k^2(1-\Delta)[1-\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}} \\
+    & = \frac{L}{\{1+k^2 - k^2[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}} \\
+    & = \frac{L (1+k^2)^{-1-\nu}}{\{1 - \frac{k^2}{1+k^2}\left[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))\right]\}^{1+\nu}} \\
+    & = \frac{L}{(1+k^2)^{1+\nu}}\sum_{j=0}^{\infty}\binom{\nu+j}{j}\left(\frac{k^2}{1+k^2}\right)^{j}[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))]^j \\
+    & = \sum_{j=0}^{\infty}\frac{L k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))]^j \\
+    & = \sum_{j=0}^{\infty}\sum_{m=0}^{j}\frac{L k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\Delta^{j-m}(1-\Delta)^m\epsilon^m\cos^m(2(\phi-\phi_0))
   \end{split}
 \end{equation}
 
@@ -54,7 +54,7 @@ And thus:
 \begin{equation}
   \begin{split}
     \label{eqn:sum}
-    \Sigma(\vec{k}) & = \sum_{j=0}^{\infty}\sum_{m=0}^{j}\sum_{n=0}^{m}\frac{L(k\gamma r_1)^{2j}}{2^m(1+k^2\gamma^2r_1^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\binom{m}{n}\Delta^{j-m}(1-\Delta)^m\epsilon^m\exp(i 2 (2n-m) (\phi-\phi_0)) \\
+    \Sigma(\vec{k}) & = \sum_{j=0}^{\infty}\sum_{m=0}^{j}\sum_{n=0}^{m}\frac{L k^{2j}}{2^m(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\binom{m}{n}\Delta^{j-m}(1-\Delta)^m\epsilon^m\exp(i 2 (2n-m) (\phi-\phi_0)) \\
     & = \sum_{j=0}^{\infty}\sum_{m=0}^{j}\sum_{n=0}^{m} a_{jmn}\mu_{jmn}(\vec{k}),
   \end{split}
 \end{equation}
@@ -64,56 +64,63 @@ where
 \end{equation}
 and
 \begin{equation}
-  \mu_{jmn}(\vec{k}) = \frac{(k\gamma r_1)^{2j}}{2^m(1+k^2\gamma^2r_1^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\binom{m}{n}\exp(i 2 (2n-m) \phi).
+  \mu_{jmn}(\vec{k}) = \frac{k^{2j}}{2^m(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\binom{m}{n}\exp(i 2 (2n-m) \phi).
 \end{equation}
 
-For galsim, let $k \gamma r_1 \rightarrow k$.
+First notice that except for the amplitude, $\mu_{jmn}(\vec{k})$, only depends on $j$ and the combination $2n-m$ (and hence not on $m$ and $n$ separately).
+
+
 Note that
 \begin{equation}
-  a_{jmn} + a_{jm(m-n)} = L \Delta^{j-m}(1-\Delta)^m\epsilon^m2\cos(2 (2n-m) \phi_0)
+  a_{jmn} = a_{jm(m-n)}^*
 \end{equation}
 and
 \begin{equation}
-  \begin{split}
-    \mu_{jmn} + \mu_{jm(m-n)} & = \frac{k^{2j}}{2^m(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\binom{m}{n}2 \cos(2 (2n-m) \phi) \\
-    & = \frac{k^{2j}}{2^{m-1}(1+k^2)^{1+\nu+j}}
-    \frac{\Gamma(\nu+j+1)}{\Gamma(\nu+1) j!}
-    \frac{j!}{(j-m)!m!}
-    \frac{m!}{(m-n)!n!}
-    \cos(2 (2n-m) \phi) \\
-    & = \frac{k^{2j}}{2^{m-1}(1+k^2)^{1+\nu+j}}
-    \frac{\Gamma(\nu+j+1)}{\Gamma(\nu+1)}
-    \frac{1}{(j-m)!}
-    \frac{1}{(m-n)!n!}
-    \cos(2 (2n-m) \phi)
-  \end{split}
-\end{equation}
-We can further rearrange terms such that $\mu$ only depends on the combination $2n-m$:
-\begin{equation}
-  a_{jmn} + a_{jm(m-n)} = \frac{L \Delta^{j-m}(1-\Delta)^m\epsilon^m\cos(2 (2n-m) \phi_0)}
-  {2^{m-2}(j-m)!(m-n)!n!}
-\end{equation}
-and
-\begin{equation}
-  \mu_{jmn} + \mu_{jm(m-n)} = \frac{k^{2j}}{(1+k^2)^{1+\nu+j}}
-    \frac{\Gamma(\nu+j+1)}{\Gamma(\nu+1)}
-    \cos(2 (2n-m) \phi)
-\end{equation}
-If we let $q=2n-m$ and restrict $q \ge 0$ (which we can do since $\cos$ is an even function), then we can rewrite Eqn. \ref{eqn:sum} as a double sum instead of a triple sum.
-\begin{equation}
-  \Sigma(\vec{k}) = \sum_{j=0}^{\infty}\sum_{q=0}^{j} a_{jq}\mu_{jq}(\vec{k}).
-\end{equation}
-To determine which $m$ and $n$ correspond to a given $q$, note that $m+q=2n$ is even and that $n \le m \Rightarrow (m+q)/2 \le m \Rightarrow q \le m$ sets a lower limit for $m$ and $m \le j$ sets the upper limit.
-With this in mind, we determine that :
-\begin{equation}
-  a_{jq} = \begin{cases} \sum_{\substack{m=q\\m+q\,\mathrm{even}}}^{j}\frac{L \Delta^{j-m}(1-\Delta)^m\epsilon^m\cos(2 q \phi_0)}
-    {2^{m-2}(j-m)!(\frac{m-q}{2})!(\frac{m+q}{2})!} & q > 0,\\
-    \frac{L \Delta^{j-m}(1-\Delta)^m\epsilon^m}
-         {2^{m-4}(j-m)!(\frac{m-q}{2})!(\frac{m+q}{2})!} & q = 0
-  \end{cases}
-\end{equation}
-and
-\begin{equation}
-  \mu_{jq} = \frac{k^{2j}}{(1+k^2)^{1+\nu+j}}\frac{\Gamma(\nu+j+1)}{\Gamma(\nu+1)}\cos(2 q \phi)
-\end{equation}
+  \mu_{jmn}(\vec{k}) = \mu_{jm(m-n)}^*(\vec{k})
+\end{equation}, and hence
+
+
+%% \begin{equation}
+%%   \begin{split}
+%%     \mu_{jmn} + \mu_{jm(m-n)} & = \frac{k^{2j}}{2^m(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\binom{m}{n}2 \cos(2 (2n-m) \phi) \\
+%%     & = \frac{k^{2j}}{2^{m-1}(1+k^2)^{1+\nu+j}}
+%%     \frac{\Gamma(\nu+j+1)}{\Gamma(\nu+1) j!}
+%%     \frac{j!}{(j-m)!m!}
+%%     \frac{m!}{(m-n)!n!}
+%%     \cos(2 (2n-m) \phi) \\
+%%     & = \frac{k^{2j}}{2^{m-1}(1+k^2)^{1+\nu+j}}
+%%     \frac{\Gamma(\nu+j+1)}{\Gamma(\nu+1)}
+%%     \frac{1}{(j-m)!}
+%%     \frac{1}{(m-n)!n!}
+%%     \cos(2 (2n-m) \phi)
+%%   \end{split}
+%% \end{equation}
+%% We can further rearrange terms such that $\mu$ only depends on the combination $2n-m$:
+%% \begin{equation}
+%%   a_{jmn} + a_{jm(m-n)} = \frac{L \Delta^{j-m}(1-\Delta)^m\epsilon^m\cos(2 (2n-m) \phi_0)}
+%%   {2^{m-2}(j-m)!(m-n)!n!}
+%% \end{equation}
+%% and
+%% \begin{equation}
+%%   \mu_{jmn} + \mu_{jm(m-n)} = \frac{k^{2j}}{(1+k^2)^{1+\nu+j}}
+%%     \frac{\Gamma(\nu+j+1)}{\Gamma(\nu+1)}
+%%     \cos(2 (2n-m) \phi)
+%% \end{equation}
+%% If we let $q=2n-m$ and restrict $q \ge 0$ (which we can do since $\cos$ is an even function), then we can rewrite Eqn. \ref{eqn:sum} as a double sum instead of a triple sum.
+%% \begin{equation}
+%%   \Sigma(\vec{k}) = \sum_{j=0}^{\infty}\sum_{q=0}^{j} a_{jq}\mu_{jq}(\vec{k}).
+%% \end{equation}
+%% To determine which $m$ and $n$ correspond to a given $q$, note that $m+q=2n$ is even and that $n \le m \Rightarrow (m+q)/2 \le m \Rightarrow q \le m$ sets a lower limit for $m$ and $m \le j$ sets the upper limit.
+%% With this in mind, we determine that :
+%% \begin{equation}
+%%   a_{jq} = \begin{cases} \sum_{\substack{m=q\\m+q\,\mathrm{even}}}^{j}\frac{L \Delta^{j-m}(1-\Delta)^m\epsilon^m\cos(2 q \phi_0)}
+%%     {2^{m-2}(j-m)!(\frac{m-q}{2})!(\frac{m+q}{2})!} & q > 0,\\
+%%     \frac{L \Delta^{j-m}(1-\Delta)^m\epsilon^m}
+%%          {2^{m-4}(j-m)!(\frac{m-q}{2})!(\frac{m+q}{2})!} & q = 0
+%%   \end{cases}
+%% \end{equation}
+%% and
+%% \begin{equation}
+%%   \mu_{jq} = \frac{k^{2j}}{(1+k^2)^{1+\nu+j}}\frac{\Gamma(\nu+j+1)}{\Gamma(\nu+1)}\cos(2 q \phi)
+%% \end{equation}
 \end{document}
