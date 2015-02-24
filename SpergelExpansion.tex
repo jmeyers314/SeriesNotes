@@ -12,7 +12,11 @@
 
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\blue}[1]{\textcolor{blue}{#1}}
-\newcommand{\farcs}{\mbox{\ensuremath{.\!\!^{\prime\prime}}}}
+
+\let\Re\undefined
+\DeclareMathOperator{\Re}{Re}
+\let\Im\undefined
+\DeclareMathOperator{\Im}{Im}
 
 \title{Spergel Notes}
 \author{Josh Meyers}
@@ -23,22 +27,23 @@
 I want to expand:
 
 \begin{equation}
-  \Sigma(\vec{k}|L,\gamma,r_0,\epsilon,\phi_0) = \frac{L}{\{1+k^2\gamma^2r_0^2[1-\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}}.
+  \label{eqn:SBdef}
+  \Sigma(\vec{k}|L,r_0,\epsilon,\phi_0) = \frac{L}{\{1+k^2r_0^2[1+\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}}.
 \end{equation}
 Instead of fitting for $r_0$, Spergel suggests fitting for
 \begin{equation}
   \Delta = 1 - \left(\frac{r_0}{r_1}\right)^2,
 \end{equation}
-where $r_1$ is the size of the nearest precomputed profile.  Here it's convenient to take $k \gamma r_1 \rightarrow k$ since the former always occur together.
+where $r_1$ is the size of the nearest precomputed profile.  Here it's convenient to take $k r_1 \rightarrow k$ since $k$ and $r_1$ always occur together.
 Expand:
 \begin{equation}
   \begin{split}
-    \Sigma(\vec{k}) & = \frac{L}{\{1+k^2(1-\Delta)[1-\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}} \\
-    & = \frac{L}{\{1+k^2 - k^2[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}} \\
-    & = \frac{L (1+k^2)^{-1-\nu}}{\{1 - \frac{k^2}{1+k^2}\left[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))\right]\}^{1+\nu}} \\
-    & = \frac{L}{(1+k^2)^{1+\nu}}\sum_{j=0}^{\infty}\binom{\nu+j}{j}\left(\frac{k^2}{1+k^2}\right)^{j}[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))]^j \\
-    & = \sum_{j=0}^{\infty}\frac{L k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))]^j \\
-    & = \sum_{j=0}^{\infty}\sum_{m=0}^{j}\frac{L k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\Delta^{j-m}(1-\Delta)^m\epsilon^m\cos^m(2(\phi-\phi_0))
+    \Sigma(\vec{k}) & = \frac{L}{\{1+k^2(1-\Delta)[1+\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}} \\
+    & = \frac{L}{\{1+k^2 - k^2[\Delta + (\Delta-1)\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}} \\
+    & = \frac{L (1+k^2)^{-1-\nu}}{\{1 - \frac{k^2}{1+k^2}\left[\Delta + (\Delta-1)\epsilon\cos(2(\phi-\phi_0))\right]\}^{1+\nu}} \\
+    & = \frac{L}{(1+k^2)^{1+\nu}}\sum_{j=0}^{\infty}\binom{\nu+j}{j}\left(\frac{k^2}{1+k^2}\right)^{j}[\Delta + (\Delta-1)\epsilon\cos(2(\phi-\phi_0))]^j \\
+    & = \sum_{j=0}^{\infty}\frac{L k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}[\Delta + (\Delta-1)\epsilon\cos(2(\phi-\phi_0))]^j \\
+    & = \sum_{j=0}^{\infty}\sum_{m=0}^{j}\frac{L k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\Delta^{j-m}(\Delta-1)^m\epsilon^m\cos^m(2(\phi-\phi_0))
   \end{split}
 \end{equation}
 
@@ -54,73 +59,77 @@ And thus:
 \begin{equation}
   \begin{split}
     \label{eqn:sum}
-    \Sigma(\vec{k}) & = \sum_{j=0}^{\infty}\sum_{m=0}^{j}\sum_{n=0}^{m}\frac{L k^{2j}}{2^m(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\binom{m}{n}\Delta^{j-m}(1-\Delta)^m\epsilon^m\exp(i 2 (2n-m) (\phi-\phi_0)) \\
+    \Sigma(\vec{k}) & = \sum_{j=0}^{\infty}\sum_{m=0}^{j}\sum_{n=0}^{m}\frac{L k^{2j}}{2^m(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\binom{m}{n}\Delta^{j-m}(\Delta-1)^m\epsilon^m\exp(i 2 (2n-m) (\phi-\phi_0)) \\
     & = \sum_{j=0}^{\infty}\sum_{m=0}^{j}\sum_{n=0}^{m} a_{jmn}\mu_{jmn}(\vec{k}),
   \end{split}
 \end{equation}
 where
 \begin{equation}
-  a_{jmn}(L, \Delta, \epsilon, \phi_0) = L \Delta^{j-m}(1-\Delta)^m\epsilon^m\exp(-i 2 (2n-m) \phi_0)
+  a_{jmn}(L, \Delta, \epsilon, \phi_0) = \frac{L}{2^m} \Delta^{j-m}(\Delta-1)^m\epsilon^m\binom{j}{m}\binom{m}{n}\exp(-i 2 (2n-m) \phi_0)
 \end{equation}
 and
 \begin{equation}
-  \mu_{jmn}(\vec{k}) = \frac{k^{2j}}{2^m(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\binom{m}{n}\exp(i 2 (2n-m) \phi).
+  \mu_{jmn}(\vec{k}) = \frac{k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\exp(i 2 (2n-m) \phi).
 \end{equation}
 
-First notice that except for the amplitude, $\mu_{jmn}(\vec{k})$, only depends on $j$ and the combination $2n-m$ (and hence not on $m$ and $n$ separately).
-
-
-Note that
+We have arranged factors that could have occured in either $a_{jmn}$ or $\mu_{jmn}(\vec{k})$ in such a way that $\mu_{jmn}(\vec{k})$ only depends on $j$ and the combination $2n-m$ (and hence not on both $m$ and $n$ separately).
+We take advantage of this by defining $q=2n-m$, which can take on values between $-j$ and $j$.
+For given $j$ and $q$, the range of possible $m$ is $|q| < m < j$.
+For given $q$ and $m$ the value of $n$ is uniquely determined as $n=(m+q)/2$.
+This allows us to rewrite Eq. \ref{eqn:sum} as 
 \begin{equation}
-  a_{jmn} = a_{jm(m-n)}^*
+  \label{eqn:sum_jq}
+  \Sigma(\vec{k}) = \sum_{j=0}^{\infty}\sum_{q=-j}^{j} a_{jq}\mu_{jq}(\vec{k}),
+\end{equation}
+where
+\begin{equation}
+  \label{eqn:ajq}
+  a_{jq}(L, \Delta, \epsilon, \phi_0) = \sum_{\substack{m=|q|\\m+q\,\mathrm{even}}}^{j}\frac{L}{2^m} \Delta^{j-m}(\Delta-1)^m\epsilon^m\binom{j}{m}\binom{m}{\frac{m+q}{2}}\exp(-i 2 q \phi_0)
 \end{equation}
 and
 \begin{equation}
-  \mu_{jmn}(\vec{k}) = \mu_{jm(m-n)}^*(\vec{k})
-\end{equation}, and hence
+  \label{eqn:mujq}
+  \mu_{jq}(\vec{k}) = \frac{k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\exp(i 2 q \phi).
+\end{equation}
 
+The coefficients $a_{jq}$ and basis functions $\mu_{jq}(\vec{k})$ are complex, but we know the surface brightness profile $\Sigma(\vec{k})$ is real (see Eq. \ref{eqn:SBdef}).
+Inspecting Eqs. \ref{eqn:ajq} and \ref{eqn:mujq}, we see that
+\begin{equation}
+  a_{jq}\mu_{jq}(\vec{k}) = [a_{j(-q)}\mu_{j(-q)}(\vec{k})]^*,
+\end{equation}
+which implies
+\begin{equation}
+  \Re{[a_{jq}\mu_{jq}(\vec{k}) + a_{j(-q)}\mu_{j(-q)}(\vec{k})]} = 2\Re{[a_{jq}\mu_{jq}(\vec{k})]}
+  = 2 (\Re{[a_{jq}]}\Re{[\mu_{jq}(\vec{k})]} - \Im{[a_{jq}]}\Im{[\mu_{jq}(\vec{k})]})
+\end{equation}
+and
+\begin{equation}
+  \Im{[a_{jq}\mu_{jq}(\vec{k}) + a_{j(-q)}\mu_{j(-q)}(\vec{k})]} = 0.
+\end{equation}
 
-%% \begin{equation}
-%%   \begin{split}
-%%     \mu_{jmn} + \mu_{jm(m-n)} & = \frac{k^{2j}}{2^m(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\binom{m}{n}2 \cos(2 (2n-m) \phi) \\
-%%     & = \frac{k^{2j}}{2^{m-1}(1+k^2)^{1+\nu+j}}
-%%     \frac{\Gamma(\nu+j+1)}{\Gamma(\nu+1) j!}
-%%     \frac{j!}{(j-m)!m!}
-%%     \frac{m!}{(m-n)!n!}
-%%     \cos(2 (2n-m) \phi) \\
-%%     & = \frac{k^{2j}}{2^{m-1}(1+k^2)^{1+\nu+j}}
-%%     \frac{\Gamma(\nu+j+1)}{\Gamma(\nu+1)}
-%%     \frac{1}{(j-m)!}
-%%     \frac{1}{(m-n)!n!}
-%%     \cos(2 (2n-m) \phi)
-%%   \end{split}
-%% \end{equation}
-%% We can further rearrange terms such that $\mu$ only depends on the combination $2n-m$:
-%% \begin{equation}
-%%   a_{jmn} + a_{jm(m-n)} = \frac{L \Delta^{j-m}(1-\Delta)^m\epsilon^m\cos(2 (2n-m) \phi_0)}
-%%   {2^{m-2}(j-m)!(m-n)!n!}
-%% \end{equation}
-%% and
-%% \begin{equation}
-%%   \mu_{jmn} + \mu_{jm(m-n)} = \frac{k^{2j}}{(1+k^2)^{1+\nu+j}}
-%%     \frac{\Gamma(\nu+j+1)}{\Gamma(\nu+1)}
-%%     \cos(2 (2n-m) \phi)
-%% \end{equation}
-%% If we let $q=2n-m$ and restrict $q \ge 0$ (which we can do since $\cos$ is an even function), then we can rewrite Eqn. \ref{eqn:sum} as a double sum instead of a triple sum.
-%% \begin{equation}
-%%   \Sigma(\vec{k}) = \sum_{j=0}^{\infty}\sum_{q=0}^{j} a_{jq}\mu_{jq}(\vec{k}).
-%% \end{equation}
-%% To determine which $m$ and $n$ correspond to a given $q$, note that $m+q=2n$ is even and that $n \le m \Rightarrow (m+q)/2 \le m \Rightarrow q \le m$ sets a lower limit for $m$ and $m \le j$ sets the upper limit.
-%% With this in mind, we determine that :
-%% \begin{equation}
-%%   a_{jq} = \begin{cases} \sum_{\substack{m=q\\m+q\,\mathrm{even}}}^{j}\frac{L \Delta^{j-m}(1-\Delta)^m\epsilon^m\cos(2 q \phi_0)}
-%%     {2^{m-2}(j-m)!(\frac{m-q}{2})!(\frac{m+q}{2})!} & q > 0,\\
-%%     \frac{L \Delta^{j-m}(1-\Delta)^m\epsilon^m}
-%%          {2^{m-4}(j-m)!(\frac{m-q}{2})!(\frac{m+q}{2})!} & q = 0
-%%   \end{cases}
-%% \end{equation}
-%% and
-%% \begin{equation}
-%%   \mu_{jq} = \frac{k^{2j}}{(1+k^2)^{1+\nu+j}}\frac{\Gamma(\nu+j+1)}{\Gamma(\nu+1)}\cos(2 q \phi)
-%% \end{equation}
+We can use these relations to define $a^\prime_{jq}$ and $\mu^\prime_{jq}(\vec{k})$
+\[
+a^\prime_{jq} =
+\begin{cases}
+  2 \Re[a_{jq}], & q > 0, \\
+  \Re[a_{jq}], & q = 0, \\
+  -2 \Im[a_{jq}], & q < 0,
+\end{cases}
+\]
+\[
+\mu^\prime_{jq}(\vec{k}) =
+\begin{cases}
+  \Re[\mu_{jq}(\vec{k})], & q \ge 0, \\
+  \Im[\mu_{jq}(\vec{k})], & q < 0,
+\end{cases}
+\]
+such that
+\begin{equation}
+  \label{eqn:sum_jqprime}
+  \Sigma(\vec{k}) = \sum_{j=0}^{\infty}\sum_{q=-j}^{j} a^\prime_{jq}\mu^\prime_{jq}(\vec{k}).
+\end{equation}
+Notice that we have been careful to not double count the terms $q$ and $-q$ when $q=0$.
+This way all of the coefficients and basis functions are real, which is good because GalSim doesn't currently have the ability to handle complex-valued real-space images.
+
+For a given series order $j_\mathrm{max}$, there are $(j_\mathrm{max}+1)^2$ terms, which is a factor $\sim 2$ more than Spergel(2010).
 \end{document}
