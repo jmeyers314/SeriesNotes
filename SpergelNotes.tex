@@ -1,7 +1,8 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{geometry}
-\usepackage{color}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+%\usepackage{color}
 \usepackage{graphicx}
 \usepackage{amsmath}
 
@@ -12,6 +13,7 @@
 
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand*{\annot}[1]{\tag*{\footnotesize{\textcolor{gray}{#1}}}}
 
 \let\Re\undefined
 \DeclareMathOperator{\Re}{Re}
@@ -24,37 +26,52 @@
 
 \begin{document}
 
-I want to expand:
+We want to expand:
 
 \begin{equation}
   \label{eqn:SBdef}
   \Sigma(\vec{k}|L,r_0,\epsilon,\phi_0) = \frac{L}{\{1+k^2r_0^2[1+\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}}.
 \end{equation}
+Notice that this is slightly simplified from what's in Spergel (2010) (there's no $\gamma$ and only a single $\nu$), and that we've flipped the sign of $\epsilon$ in order to make it more compatible with the GalSim ellipticity convention.
 Instead of fitting for $r_0$, Spergel suggests fitting for
 \begin{equation}
   \Delta = 1 - \left(\frac{r_0}{r_1}\right)^2,
 \end{equation}
-where $r_1$ is the size of the nearest precomputed profile.  Here it's convenient to take $k r_1 \rightarrow k$ since $k$ and $r_1$ always occur together.
-Expand:
-\begin{equation}
-  \begin{split}
-    \Sigma(\vec{k}) & = \frac{L}{\{1+k^2(1-\Delta)[1+\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}} \\
-    & = \frac{L}{\{1+k^2 - k^2[\Delta + (\Delta-1)\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}} \\
-    & = \frac{L (1+k^2)^{-1-\nu}}{\{1 - \frac{k^2}{1+k^2}\left[\Delta + (\Delta-1)\epsilon\cos(2(\phi-\phi_0))\right]\}^{1+\nu}} \\
-    & = \frac{L}{(1+k^2)^{1+\nu}}\sum_{j=0}^{\infty}\binom{\nu+j}{j}\left(\frac{k^2}{1+k^2}\right)^{j}[\Delta + (\Delta-1)\epsilon\cos(2(\phi-\phi_0))]^j \\
-    & = \sum_{j=0}^{\infty}\frac{L k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}[\Delta + (\Delta-1)\epsilon\cos(2(\phi-\phi_0))]^j \\
-    & = \sum_{j=0}^{\infty}\sum_{m=0}^{j}\frac{L k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\Delta^{j-m}(\Delta-1)^m\epsilon^m\cos^m(2(\phi-\phi_0))
-  \end{split}
-\end{equation}
+where $r_1$ is the size of the nearest precomputed profile.
+For convenience we take $r_1 \rightarrow 1$ and expand:
+\begin{align}
+  \Sigma(\vec{k})
+  &= \frac{L}{\{1+k^2(1-\Delta)[1+\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}}
+  \annot{substitute in $\Delta$} \\
+  &= \frac{L}{\{1+k^2 - k^2[\Delta + (\Delta-1)\epsilon\cos(2(\phi-\phi_0))]\}^{1+\nu}}
+  \annot{expand $(1-\Delta)$} \\
+  &= \frac{L (1+k^2)^{-1-\nu}}{\{1 - \frac{k^2}{1+k^2}\left[\Delta + (\Delta-1)\epsilon\cos(2(\phi-\phi_0))\right]\}^{1+\nu}}
+  \annot{divide by $(1+k^2)^{1+\nu}$} \\
+  &= \frac{L}{(1+k^2)^{1+\nu}}\sum_{j=0}^{\infty}\binom{\nu+j}{j}\left(\frac{k^2}{1+k^2}\right)^{j}[\Delta + (\Delta-1)\epsilon\cos(2(\phi-\phi_0))]^j
+  \annot{binomial expansion of $\{\cdot\}^{1+\nu}$} \\
+  &= \sum_{j=0}^{\infty}\frac{L k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}[\Delta + (\Delta-1)\epsilon\cos(2(\phi-\phi_0))]^j
+  \annot{regroup terms} \\
+  &= \sum_{j=0}^{\infty}\sum_{m=0}^{j}\frac{L k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\binom{j}{m}\Delta^{j-m}(\Delta-1)^m\epsilon^m\cos^m(2(\phi-\phi_0))
+  \annot{binomial expansion of $[\cdot]^j$}
+\end{align}
 
-This is where the mistake is.  We need to separate the $\phi$ and the $\phi_0$ in order for the galaxy model parameters to separate from the $\vec{k}$ basis functions.
+This is essentially Spergel (2010) Eq. (44).
+Spergel then rewrites the $\cos^m(2 (\phi-\phi_0))$ as $\exp(2 i m (\phi-\phi_0))$ so that it's easy to separate the $\phi$ from $\phi_0$.
+It's implicit that one would then take the real part of the resulting expression to recover the (real-valued) image.
+We believe this is a mistake, however, since
 \begin{equation}
-  \begin{split}
-    \cos^m(x) & = \frac{1}{2^m}\left(e^{ix} + e^{-ix}\right)^m \\
-    & = \frac{1}{2^m} \sum_{n=0}^{m}\binom{m}{n}(e^{i n x} e^{-i (m-n) x}) \\
-    & = \frac{1}{2^m} \sum_{n=0}^{m}\binom{m}{n}e^{i (2n-m) x}
-  \end{split}
+  \Re[\exp(2 i m (\phi-\phi_0))] = \Re[\exp(2 i (\phi-\phi_0))^m] \ne \Re[\exp(2 i (\phi-\phi_0))]^m = \cos^m(2 (\phi-\phi_0)).
 \end{equation}
+Here's our alternative version of the $\cos^m(x)$ expansion:
+\begin{align}
+  \cos^m(x)
+  &= \frac{1}{2^m}\left(e^{ix} + e^{-ix}\right)^m
+  \annot{rewrite $\cos$ in terms of $\exp$} \\
+  &= \frac{1}{2^m} \sum_{n=0}^{m}\binom{m}{n}(e^{i n x} e^{-i (m-n) x})
+  \annot{binomial expansion of $(\cdot)^m$} \\
+  &= \frac{1}{2^m} \sum_{n=0}^{m}\binom{m}{n}e^{i (2n-m) x}
+  \annot{collect like terms}
+\end{align}
 And thus:
 \begin{equation}
   \begin{split}
@@ -72,11 +89,11 @@ and
   \mu_{jmn}(\vec{k}) = \frac{k^{2j}}{(1+k^2)^{1+\nu+j}}\binom{\nu+j}{j}\exp(i 2 (2n-m) \phi).
 \end{equation}
 
-We have arranged factors that could have occured in either $a_{jmn}$ or $\mu_{jmn}(\vec{k})$ in such a way that $\mu_{jmn}(\vec{k})$ only depends on $j$ and the combination $2n-m$ (and hence not on both $m$ and $n$ separately).
-We take advantage of this by defining $q=2n-m$, which can take on values between $-j$ and $j$.
+We have arranged factors that could have occured in either $a_{jmn}$ or $\mu_{jmn}(\vec{k})$ in such a way that $\mu_{jmn}(\vec{k})$ only depends on $j$ and $q = 2n-m$ (and hence not on both $m$ and $n$ separately).
+$q$ can take on values between $-j$ and $j$.
 For given $j$ and $q$, the range of possible $m$ is $|q| < m < j$.
-For given $q$ and $m$ the value of $n$ is uniquely determined as $n=(m+q)/2$.
-This allows us to rewrite Eq. \ref{eqn:sum} as 
+For given $q$ and $m$ the value of $n$ is determined from the equation above as $n=(m+q)/2$.
+This allows us to rewrite Eq. \ref{eqn:sum} as
 \begin{equation}
   \label{eqn:sum_jq}
   \Sigma(\vec{k}) = \sum_{j=0}^{\infty}\sum_{q=-j}^{j} a_{jq}\mu_{jq}(\vec{k}),
@@ -93,6 +110,7 @@ and
 \end{equation}
 
 The coefficients $a_{jq}$ and basis functions $\mu_{jq}(\vec{k})$ are complex, but we know the surface brightness profile $\Sigma(\vec{k})$ is real (see Eq. \ref{eqn:SBdef}).
+There must be a good amount of cancellation in the imaginary parts of the terms of the series.
 Inspecting Eqs. \ref{eqn:ajq} and \ref{eqn:mujq}, we see that
 \begin{equation}
   a_{jq}\mu_{jq}(\vec{k}) = [a_{j(-q)}\mu_{j(-q)}(\vec{k})]^*,
@@ -126,10 +144,10 @@ a^\prime_{jq} =
 such that
 \begin{equation}
   \label{eqn:sum_jqprime}
-  \Sigma(\vec{k}) = \sum_{j=0}^{\infty}\sum_{q=-j}^{j} a^\prime_{jq}\mu^\prime_{jq}(\vec{k}).
+  \Sigma(\vec{k}) = \sum_{j=0}^{\infty}\sum_{q=-j}^{j} a^\prime_{jq}\mu^\prime_{jq}(\vec{k}),
 \end{equation}
+where all the basis functions and coefficients are real (which is good, because GalSim doesn't include the ability to generate complex-valued images.)
 Notice that we have been careful to not double count the terms $q$ and $-q$ when $q=0$.
-This way all of the coefficients and basis functions are real, which is good because GalSim doesn't currently have the ability to handle complex-valued real-space images.
 
 For a given series order $j_\mathrm{max}$, there are $(j_\mathrm{max}+1)^2$ terms, which is a factor $\sim 2$ more than Spergel(2010).
 \end{document}
