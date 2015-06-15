@@ -41,7 +41,7 @@ where $r$ and $\phi$ are image plane coordinates, $\rho$ and $\theta$ are pupil-
   \mathrm{PSF}(r, \phi) = \left|U(r, \phi)\right|^2 = U(r, \phi) U^*(r, \phi).
 \end{equation}
 
-Note that the $\exp\left[2\pi i \rho r \cos(\theta - \phi)\right]\rho$ term is just the familiar Fourier transform kernel written in polar coordinates, and thus Equation \ref{eqn:PSF} is equivalent to
+Note that the $\exp\left[i \rho r \cos(\theta - \phi)\right]\rho$ term is just the familiar Fourier transform kernel written in polar coordinates, and thus Equation \ref{eqn:PSF} is equivalent to
 \begin{equation}
   \label{eqn:FT_PSF}
   \mathrm{PSF}(r, \phi) = \left|\mathcal{F}\left[P(\rho, \theta)\right](r, \phi)\right|^2.
@@ -161,7 +161,7 @@ we can manipulate the $V_{n n^\prime}^{m m^\prime}(r, \phi)$ into sums in which 
   \mathcal{F} \left[f(r) \cos(m \phi) \right](\rho, \theta) = 2 \pi i^m \cos(m \theta) \int_0^\infty f(r) J_m(\rho r) r \dif{r}.
 \end{equation}
 
-For example, the Fourier transform of $V_{3,1}^{3,1}(r, \phi)$ (i.e., the cross term between the $\cos$-like trefoil and the $\cos$-like coma) is:
+For example, the Fourier transform of $V_{3,1}^{3,1}(r, \phi)$ (i.e., the cross term between the $\cos$-like trefoil and the $\cos$-like tip/tilt) is:
 \begin{align}
   \mathcal{F} \left[V_{3,1}^{3,1}(r, \phi)\right](\rho, \theta) &= \mathcal{F} \left[\frac{J_4(r) J_2(r)}{r^2} \cos(3 \phi) \cos(\phi)\right](\rho, \theta) \\
   &= \mathcal{F} \left[\frac{J_4(r) J_2(r)}{2 r^2} \cos(4 \phi)\right](\rho, \theta) + \mathcal{F} \left[\frac{J_4(r) J_2(r)}{r^2} \cos(2 \phi)\right](\rho, \theta) \\
