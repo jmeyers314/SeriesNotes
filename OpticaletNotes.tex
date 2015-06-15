@@ -1,0 +1,172 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+%\usepackage{color}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{commath}
+
+\geometry{textwidth=6.5in, textheight=9.0in,
+  marginparsep=7pt, marginparwidth=.6in}
+\setlength{\parindent}{0in}
+\setlength{\parskip}{0.08in}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand*{\annot}[1]{\tag*{\footnotesize{\textcolor{gray}{#1}}}}
+\newcommand{\trig}{\mathrm{trig}}
+
+\renewcommand{\arraystretch}{1.3}
+
+\let\Re\undefined
+\DeclareMathOperator{\Re}{Re}
+\let\Im\undefined
+\DeclareMathOperator{\Im}{Im}
+
+\title{Opticalet Notes}
+\author{Josh Meyers}
+\date{June 2015}
+
+\begin{document}
+
+In the Fraunhofer far-field approximation, a complex normalized PSF can be written:
+\begin{equation}
+  \label{eqn:cPSF}
+  U(r, \phi) = \frac{1}{\pi} \int_0^1 \int_0^{2\pi} P(\rho, \theta) \exp\left[i \rho r \cos(\theta - \phi)\right]\rho \dif{\rho} \dif{\theta}, 
+\end{equation}
+where $r$ and $\phi$ are image plane coordinates, $\rho$ and $\theta$ are pupil-plane coordinates, and $P(\rho, \theta) = A(\rho, \theta) \exp\left[i \Phi(\rho, \theta)\right]$ is the complex pupil function indicating the phase $\Phi(\rho, \theta)$ and amplitude $A(\rho, \theta)$ of the wavefront across the entrance pupil.  The PSF is then the squared amplitude of the complex PSF:
+\begin{equation}
+  \label{eqn:PSF}
+  \mathrm{PSF}(r, \phi) = \left|U(r, \phi)\right|^2 = U(r, \phi) U^*(r, \phi).
+\end{equation}
+
+Note that the $\exp\left[2\pi i \rho r \cos(\theta - \phi)\right]\rho$ term is just the familiar Fourier transform kernel written in polar coordinates, and thus Equation \ref{eqn:PSF} is equivalent to
+\begin{equation}
+  \label{eqn:FT_PSF}
+  \mathrm{PSF}(r, \phi) = \left|\mathcal{F}\left[P(\rho, \theta)\right](r, \phi)\right|^2.
+\end{equation}
+
+It is common to expand the phase $\Phi(\rho, \theta)$ into a separable orthogonal series of radial polynomials (Zernike polynomials) and azimuthal trignometric functions:
+
+\begin{equation}
+  \Phi(\rho, \theta) = \sum_{n,m}\alpha_n^m Z_n^m(\rho, \theta),
+\end{equation}
+where
+\begin{equation}
+  Z_n^m(\rho, \theta) = R^m_n(\rho) \trig_m(m \theta)
+\end{equation}
+and
+\begin{equation}
+  \trig_m(x) = 
+  \begin{cases}
+    \cos(x), m \ge 0 \\
+    \sin(x), m < 0.
+  \end{cases}
+\end{equation}
+
+In the above, $n$ ranges from $0$ to $\infty$, and $m$ ranges from $-n$ to $n$, but with the restriction that $m+n$ is even.
+The coefficients $\alpha_n^m$ are the amplitudes (in waves?) of well known aberrations such as astigmatism and coma.  The first few named aberrations and the corresponding coefficients are given in the following table:
+
+\begin{center}
+  \begin{tabular}{cc}
+    coefficient & aberration \\
+    \hline
+    $\alpha_0^0$ & piston \\
+    $\alpha_1^{\pm 1}$ & tip/tilt \\
+    $\alpha_2^0$ & defocus \\
+    $\alpha_2^{\pm 2}$ & astigmatism \\
+    $\alpha_3^{\pm 1}$ & coma \\
+    $\alpha_3^{\pm 3}$ & trefoil \\
+    $\alpha_4^0$ & spherical 
+  \end{tabular}
+\end{center}
+
+So far, the description above is completely generic, and only assumes that the Fraunhofer approximation is valid.  However, the framework to evaluate a PSF with arbitrary Zernike aberrations can be computationally expensive.  We can significantly improve the PSF evaluation efficiency using a couple of approximations.  We begin by asserting that the amplitude function is a circular tophat -- i.e., we ignore any obscurations from secondary optics or support structures and also scintillation:
+\begin{equation}
+  A(\rho, \theta) =
+  \begin{cases}
+    1, \rho < 1 \\
+    0, \rho > 1.
+  \end{cases}
+\end{equation}
+Note that working with a centered circular obscuration (i.e., an annular pupil) may still be tractable if one is willing to use annular Zernike functions instead of circular Zernike functions, though we do not explore this further here.
+
+The second, more severe, approximation we will make is to linearize the exponential of the phase: $\exp[i \Phi] \approx 1+i \Phi$, which should be okay for small phases.  How small is an research question to be answered.
+
+By linearizing the phase, we can take advantage of the fact that the Fourier transforms of the terms in the Zernike expansion are analytic:
+
+\begin{equation}
+  \mathcal{F}\left[Z_n^m(\rho, \theta)\right](r, \phi) = 2 \pi i^m (-1)^{\frac{n-m}{2}} \frac{J_{n+1}(r)}{r}\trig_m(m \phi)
+\end{equation}
+
+And thus the complex PSF is also analytic and linear in the aberration coefficients:
+\begin{equation}
+  U(r, \phi) = 2\left[\frac{J_1(r)}{r} + i \sum_{n,m} \alpha_n^m i^n \frac{J_{n+1}(r)}{r}\trig_m(m \phi)\right]
+\end{equation}
+
+Note that the $\alpha_n^m$ are real, so the terms inside the summation symbol above are always either purely real or purely imaginary.  In fact, it's convenient to separate these two cases at this point, before squaring the complex PSF:
+\begin{equation}
+  U(r, \phi) = 2\left[\frac{J_1(r)}{r} + \sum_{n\,\mathrm{odd}, m}\alpha_n^m(-1)^{\frac{n+1}{2}}\frac{J_{n+1}(r)}{r}\trig_m(m \phi) + i\sum_{n\,\mathrm{even}, m}\alpha_n^m(-1)^\frac{n}{2}\frac{J_{n+1}(r)}{r}\trig_m(m \phi)\right]
+\end{equation}
+
+The PSF is then:
+\begin{equation}
+  \label{eqn:PSF_expand}
+  \mathrm{PSF}(r, \phi) = U(r, \phi) U(r, \phi)^* = 4 \sum_{m,n}\sum_{m^\prime, n^\prime} C_{n n^\prime}^{m m^\prime}
+  V_{n n^\prime}^{m m^\prime}(r, \phi)
+\end{equation}
+where
+\begin{equation}
+  V_{n n^\prime}^{m m^\prime}(r, \phi) = \frac{J_{n+1}(r)}{r}\frac{J_{n^\prime+1}(r)}{r} \trig_m(m \phi) \trig_{m^\prime}(m^\prime \phi),
+\end{equation}
+and
+\begin{equation}
+  C_{n n^\prime}^{m m^\prime} =
+  \begin{cases}
+    1, & n=n^\prime=0 \\
+    \alpha^{m^\prime}_{n^\prime} (-1)^{\frac{n^\prime+1}{2}}, & n=0, n^\prime \, \mathrm{odd} \\
+    \alpha^m_n (-1)^{\frac{n+1}{2}}, & n^\prime=0, n \, \mathrm{odd} \\
+    \alpha^m_n \alpha^{m^\prime}_{n^\prime} (-1)^{\frac{n+n^\prime+2}{2}}, & n \, \mathrm{odd}, n^\prime \, \mathrm{odd} \\
+    \alpha^m_n \alpha^{m^\prime}_{n^\prime} (-1)^{\frac{n+n^\prime}{2}}, & n \, \mathrm{even}, n^\prime \, \mathrm{even} \\
+    0, & \mathrm{otherwise}.
+  \end{cases}
+\end{equation}
+Again, recall that in the above, $n+m$ is even, and $-n \le m \le n$, and similarly for $n^\prime$ and $m^\prime$.
+
+Note that the second, third, and fourth cases above, due to the requirement that either $n$ or $n^\prime$ or both be odd, include contributions from tip, tilt, coma, and trefoil, but do not include any contributions from defocus, astigmatism, or spherical aberration.
+The reverse is true for the fifth case where $n$ and $n^\prime$ are both required to be even.
+Also, observe that second and third cases are the same up to relabeling indices (so we can multiply by 2 and only include one of the cases), and recall that tip and tilt only affect the distortion (i.e., the PSF centroid), and not the PSF shape, and can thus be ignored when describing the PSF shape.
+
+Putting all of this together and working through aberrations from defocus up to spherical, we see that the PSF expansion in \ref{eqn:PSF_expand} contains $1 + 4 + \binom{4}{2} + \binom{4}{2} = 29$ terms.
+
+The next step towards using this expansion in GalSim is to express the Fourier transforms of the basis profiles $\widetilde{V}_{n n^\prime}^{m m^\prime}(\rho, \theta) = \mathcal{F} \left[V_{n n^\prime}^{m m^\prime}(r, \phi)\right] (\rho, \theta)$.
+Each of these involves the product of two trigonometric functions.
+Using the product-to-sum rules,
+\begin{equation}
+  \cos(a) \cos(b) = \frac{1}{2}\left(\cos(a+b) + \cos(a-b)\right),
+\end{equation}
+\begin{equation}
+  \sin(a) \sin(b) = \frac{1}{2}\left(\cos(a-b) - \cos(a+b)\right),
+\end{equation}
+\begin{equation}
+  \sin(a) \cos(b) = \frac{1}{2}\left(\sin(a+b) + \sin(a-b)\right),
+\end{equation}
+\begin{equation}
+  \cos(a) \sin(b) = \frac{1}{2}\left(\sin(a+b) - \sin(a-b)\right),
+\end{equation}
+we can manipulate the $V_{n n^\prime}^{m m^\prime}(r, \phi)$ into sums in which each term has a single $m$ azimuthal mode and can thus be Fourier transformed via a Hankel transform:
+\begin{equation}
+  \label{eqn:Hankel}
+  \mathcal{F} \left[f(r) \cos(m \phi) \right](\rho, \theta) = 2 \pi i^m \cos(m \theta) \int_0^\infty f(r) J_m(\rho r) r \dif{r}.
+\end{equation}
+
+For example, the Fourier transform of $V_{3,1}^{3,1}(r, \phi)$ (i.e., the cross term between the $\cos$-like trefoil and the $\cos$-like coma) is:
+\begin{align}
+  \mathcal{F} \left[V_{3,1}^{3,1}(r, \phi)\right](\rho, \theta) &= \mathcal{F} \left[\frac{J_4(r) J_2(r)}{r^2} \cos(3 \phi) \cos(\phi)\right](\rho, \theta) \\
+  &= \mathcal{F} \left[\frac{J_4(r) J_2(r)}{2 r^2} \cos(4 \phi)\right](\rho, \theta) + \mathcal{F} \left[\frac{J_4(r) J_2(r)}{r^2} \cos(2 \phi)\right](\rho, \theta) \\
+  &= 2 \pi \cos(4 \theta) \int_0^\infty \frac{J_4(r) J_2(r)}{r^2} J_4(\rho r) r \dif{r} + 2 \pi \cos(2 \theta) \int_0^\infty \frac{J_4(r) J_2(r)}{r^2} J_2(\rho r) r \dif{r}.
+\end{align}
+
+Notice that since we only ever take the sum and difference of integers that differ by a factor of 2 when using the product-to-sum rules, the Hankel transform in Eq. \ref{eqn:Hankel} is always real.
+\end{document}

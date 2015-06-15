@@ -1,0 +1,140 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+%\usepackage{color}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\geometry{textwidth=6.5in, textheight=9.0in,
+  marginparsep=7pt, marginparwidth=.6in}
+\setlength{\parindent}{0in}
+\setlength{\parskip}{0.08in}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand*{\annot}[1]{\tag*{\footnotesize{\textcolor{gray}{#1}}}}
+
+\let\Re\undefined
+\DeclareMathOperator{\Re}{Re}
+\let\Im\undefined
+\DeclareMathOperator{\Im}{Im}
+
+\title{Moffat Notes}
+\author{Josh Meyers}
+\date{March 2015}
+
+\begin{document}
+
+We want to expand:
+
+\begin{equation}
+  \label{eqn:SBdef}
+  \Sigma(\vec{r}|L,r_0,\epsilon,\phi_0) = \frac{L (\beta-1)\sqrt{1-\epsilon^2}}{\pi r_0^2 \{1+(r^2/r_0^2)[1-\epsilon\cos(2(\phi-\phi_0))]\}^\beta}.
+\end{equation}
+
+There are several modifications here from the Spergel profile expansion.
+I switched the sign of $\epsilon$ since the fat direction in Fourier space corresponds to the narrow direction in real space.
+I also normalized the profile to have unit flux.
+
+To expand in size, we use
+\begin{equation}
+  \Delta = 1 - \left(\frac{r_1}{r_0}\right)^2,
+\end{equation}
+or
+\begin{equation}
+  r_0^2 = r_1^2/(1-\Delta),
+\end{equation}
+where $r_1$ is the size of the nearest precomputed profile.
+Notice that the fraction above is the inverse of that used in the Spergel profile expansion.
+
+For convenience we take $r_1 \rightarrow 1$ and expand:
+\begin{align}
+  \Sigma(\vec{r})
+  &= \frac{L(\beta-1)\sqrt{1-\epsilon^2}(1-\Delta)}{\pi \{1+r^2(1-\Delta)[1-\epsilon\cos(2(\phi-\phi_0))]\}^\beta}
+  \annot{substitute in $\Delta$} \\
+  &= \frac{L(\beta-1)\sqrt{1-\epsilon^2}(1-\Delta)}{\pi \{1+r^2 - r^2[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))]\}^\beta}
+  \annot{expand $(1-\epsilon ... )$} \\
+  &= \frac{L(\beta-1) (1+r^2)^{-\beta}\sqrt{1-\epsilon^2}(1-\Delta)}{\pi \{1 - \frac{r^2}{1+r^2}\left[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))\right]\}^\beta}
+  \annot{divide by $(1+r^2)^\beta$} \\
+  &= \frac{L(\beta-1)\sqrt{1-\epsilon^2}(1-\Delta)}{\pi (1+r^2)^\beta}\sum_{j=0}^{\infty}\binom{\beta-1+j}{j}\left(\frac{r^2}{1+r^2}\right)^{j}[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))]^j
+  \annot{binomial expansion of $\{\cdot\}^\beta$} \\
+  &= \sum_{j=0}^{\infty}\frac{L (\beta-1)\sqrt{1-\epsilon^2}(1-\Delta) r^{2j}}{\pi (1+r^2)^{\beta+j}}\binom{\beta-1+j}{j}[\Delta + (1-\Delta)\epsilon\cos(2(\phi-\phi_0))]^j
+  \annot{regroup terms} \\
+  &= \sum_{j=0}^{\infty}\sum_{m=0}^{j}\frac{L (\beta-1) \sqrt{1-\epsilon^2} r^{2j}}{\pi (1+r^2)^{\beta+j}}\binom{\beta-1+j}{j}\binom{j}{m}\Delta^{j-m}(1-\Delta)^{m+1}\epsilon^m\cos^m(2(\phi-\phi_0))
+  \annot{binomial expansion of $[\cdot]^j$ and combine $(1-\Delta)$s} \\
+  &= \sum_{j=0}^{\infty}\sum_{m=0}^{j}\sum_{n=0}^{m}\frac{L (\beta-1) \sqrt{1-\epsilon^2} r^{2j}}{\pi (1+r^2)^{\beta+j}}\binom{\beta-1+j}{j}\binom{j}{m}\Delta^{j-m}(1-\Delta)^{m+1}\epsilon^m\exp(i 2 (2n-m) (\phi-\phi_0))
+  \annot{expand $\cos^m(...))$} \\
+  &= \sum_{j=0}^{\infty}\sum_{m=0}^{j}\sum_{n=0}^{m} a_{jmn}\mu_{jmn}(\vec{r}),
+\end{align}
+where
+\begin{equation}
+  a_{jmn}(L, \Delta, \epsilon, \phi_0) = \frac{L}{2^m} \sqrt{1-\epsilon^2} \Delta^{j-m}(1-\Delta)^{m+1}\epsilon^m\binom{j}{m}\binom{m}{n}\exp(-i 2 (2n-m) \phi_0)
+\end{equation}
+and
+\begin{equation}
+  \mu_{jmn}(\vec{r}) = \frac{(\beta-1)r^{2j}}{\pi (1+r^2)^{\beta+j}}\binom{\beta-1+j}{j}\exp(i 2 (2n-m) \phi).
+\end{equation}
+
+We have arranged factors that could have occured in either $a_{jmn}$ or $\mu_{jmn}(\vec{r})$ in such a way that $\mu_{jmn}(\vec{r})$ only depends on $j$ and $q = 2n-m$ (and hence not on both $m$ and $n$ separately).
+$q$ can take on values between $-j$ and $j$.
+For given $j$ and $q$, the range of possible $m$ is $|q| < m < j$.
+For given $q$ and $m$ the value of $n$ is determined from the equation above as $n=(m+q)/2$.
+This allows us to rewrite the triple sum as
+\begin{equation}
+  \label{eqn:sum_jq}
+  \Sigma(\vec{r}) = \sum_{j=0}^{\infty}\sum_{q=-j}^{j} a_{jq}\mu_{jq}(\vec{r}),
+\end{equation}
+where
+\begin{equation}
+  \label{eqn:ajq}
+  a_{jq}(L, \Delta, \epsilon, \phi_0) = \sum_{\substack{m=|q|\\m+q\,\mathrm{even}}}^{j}\frac{L}{2^m} \sqrt{1-\epsilon^2}\Delta^{j-m}(1-\Delta)^{m+1}\epsilon^m\binom{j}{m}\binom{m}{\frac{m+q}{2}}\exp(-i 2 q \phi_0)
+\end{equation}
+and
+\begin{equation}
+  \label{eqn:mujq}
+  \mu_{jq}(\vec{r}) = \frac{(\beta-1)r^{2j}}{\pi(1+r^2)^{\beta+j}}\binom{\beta-1+j}{j}\exp(i 2 q \phi).
+\end{equation}
+
+The coefficients $a_{jq}$ and basis functions $\mu_{jq}(\vec{r})$ are complex, but we know the surface brightness profile $\Sigma(\vec{r})$ is real (see Eq. \ref{eqn:SBdef}).
+There must be a good amount of cancellation in the imaginary parts of the terms of the series.
+Inspecting Eqs. \ref{eqn:ajq} and \ref{eqn:mujq}, we see that
+\begin{equation}
+  a_{jq}\mu_{jq}(\vec{r}) = [a_{j(-q)}\mu_{j(-q)}(\vec{r})]^*,
+\end{equation}
+which implies
+\begin{equation}
+  \Re{[a_{jq}\mu_{jq}(\vec{r}) + a_{j(-q)}\mu_{j(-q)}(\vec{r})]} = 2\Re{[a_{jq}\mu_{jq}(\vec{r})]}
+  = 2 (\Re{[a_{jq}]}\Re{[\mu_{jq}(\vec{r})]} - \Im{[a_{jq}]}\Im{[\mu_{jq}(\vec{r})]})
+\end{equation}
+and
+\begin{equation}
+  \Im{[a_{jq}\mu_{jq}(\vec{r}) + a_{j(-q)}\mu_{j(-q)}(\vec{r})]} = 0.
+\end{equation}
+
+We can use these relations to define $a^\prime_{jq}$ and $\mu^\prime_{jq}(\vec{r})$
+\[
+a^\prime_{jq} =
+\begin{cases}
+  2 \Re[a_{jq}], & q > 0, \\
+  \Re[a_{jq}], & q = 0, \\
+  -2 \Im[a_{jq}], & q < 0,
+\end{cases}
+\]
+\[
+\mu^\prime_{jq}(\vec{r}) =
+\begin{cases}
+  \Re[\mu_{jq}(\vec{r})], & q \ge 0, \\
+  \Im[\mu_{jq}(\vec{r})], & q < 0,
+\end{cases}
+\]
+such that
+\begin{equation}
+  \label{eqn:sum_jqprime}
+  \Sigma(\vec{r}) = \sum_{j=0}^{\infty}\sum_{q=-j}^{j} a^\prime_{jq}\mu^\prime_{jq}(\vec{r}),
+\end{equation}
+where all the basis functions and coefficients are real (which is good, because GalSim doesn't include the ability to generate complex-valued images.)
+Notice that we have been careful to not double count the terms $q$ and $-q$ when $q=0$.
+
+For a given series order $j_\mathrm{max}$, there are $(j_\mathrm{max}+1)^2$ terms.
+\end{document}
