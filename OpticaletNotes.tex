@@ -140,7 +140,7 @@ Also, observe that second and third cases are the same up to relabeling indices 
 
 Putting all of this together and working through aberrations from defocus up to spherical, we see that the PSF expansion in \ref{eqn:PSF_expand} contains $1 + 4 + \binom{4}{2} + \binom{4}{2} = 29$ terms.
 
-The next step towards using this expansion in GalSim is to express the Fourier transforms of the basis profiles $\widetilde{V}_{n n^\prime}^{m m^\prime}(\rho, \theta) = \mathcal{F} \left[V_{n n^\prime}^{m m^\prime}(r, \phi)\right] (\rho, \theta)$.
+The next step towards using this expansion in GalSim is to express the Fourier transforms of the basis profiles $\widetilde{V}_{n n^\prime}^{m m^\prime}(k, \phi_k) = \mathcal{F} \left[V_{n n^\prime}^{m m^\prime}(r, \phi)\right] (k, \phi_k)$.
 Each of these involves the product of two trigonometric functions.
 Using the product-to-sum rules,
 \begin{equation}
@@ -158,14 +158,14 @@ Using the product-to-sum rules,
 we can manipulate the $V_{n n^\prime}^{m m^\prime}(r, \phi)$ into sums in which each term has a single $m$ azimuthal mode and can thus be Fourier transformed via a Hankel transform:
 \begin{equation}
   \label{eqn:Hankel}
-  \mathcal{F} \left[f(r) \cos(m \phi) \right](\rho, \theta) = 2 \pi i^m \cos(m \theta) \int_0^\infty f(r) J_m(\rho r) r \dif{r}.
+  \mathcal{F} \left[f(r) \cos(m \phi) \right](k, \phi_k) = 2 \pi i^m \cos(m \phi_k) \int_0^\infty f(r) J_m(k r) r \dif{r}.
 \end{equation}
 
 For example, the Fourier transform of $V_{3,1}^{3,1}(r, \phi)$ (i.e., the cross term between the $\cos$-like trefoil and the $\cos$-like tip/tilt) is:
 \begin{align}
-  \mathcal{F} \left[V_{3,1}^{3,1}(r, \phi)\right](\rho, \theta) &= \mathcal{F} \left[\frac{J_4(r) J_2(r)}{r^2} \cos(3 \phi) \cos(\phi)\right](\rho, \theta) \\
-  &= \mathcal{F} \left[\frac{J_4(r) J_2(r)}{2 r^2} \cos(4 \phi)\right](\rho, \theta) + \mathcal{F} \left[\frac{J_4(r) J_2(r)}{r^2} \cos(2 \phi)\right](\rho, \theta) \\
-  &= 2 \pi \cos(4 \theta) \int_0^\infty \frac{J_4(r) J_2(r)}{r^2} J_4(\rho r) r \dif{r} + 2 \pi \cos(2 \theta) \int_0^\infty \frac{J_4(r) J_2(r)}{r^2} J_2(\rho r) r \dif{r}.
+  \mathcal{F} \left[V_{3,1}^{3,1}(r, \phi)\right](k, \phi_k) &= \mathcal{F} \left[\frac{J_4(r) J_2(r)}{r^2} \cos(3 \phi) \cos(\phi)\right](k, \phi_k) \\
+  &= \mathcal{F} \left[\frac{J_4(r) J_2(r)}{2 r^2} \cos(4 \phi)\right](k, \phi_k) + \mathcal{F} \left[\frac{J_4(r) J_2(r)}{r^2} \cos(2 \phi)\right](k, \phi_k) \\
+  &= 2 \pi \cos(4 \phi_k) \int_0^\infty \frac{J_4(r) J_2(r)}{r^2} J_4(k r) r \dif{r} + 2 \pi \cos(2 \phi_k) \int_0^\infty \frac{J_4(r) J_2(r)}{r^2} J_2(k r) r \dif{r}.
 \end{align}
 
 Notice that since we only ever take the sum and difference of integers that differ by a factor of 2 when using the product-to-sum rules, the Hankel transform in Eq. \ref{eqn:Hankel} is always real.
